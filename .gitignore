@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+agy_nodeos.db
+daemon.log
+workflow.json
+.jsagent/
+.agents/agents/
+*.shadow

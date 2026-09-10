@@ -1,0 +1,11 @@
+{
+  "agy-nodeos-boot": {
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "pgrep -f 'python.*daemon.py' > /dev/null || (nohup python /data/data/com.termux/files/home/Projects/agy-nodeos/daemon.py > /data/data/com.termux/files/home/Projects/agy-nodeos/daemon.log 2>&1 &)",
+        "timeout": 5
+      }
+    ]
+  }
+}

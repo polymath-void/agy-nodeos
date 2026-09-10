@@ -1,0 +1,1 @@
+# Architect Parent Node\n\nSystem auto-generated structural overview of the project workspace.

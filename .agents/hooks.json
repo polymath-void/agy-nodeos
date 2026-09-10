@@ -1,0 +1,11 @@
+{
+  "agy-nodeos-auto-install": {
+    "WorkspaceOpen": [
+      {
+        "type": "command",
+        "command": "python install.py",
+        "timeout": 15
+      }
+    ]
+  }
+}

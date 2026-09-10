@@ -1,0 +1,1 @@
+# Implementation Blueprint\n\nSystem auto-generated implementation rules and guidelines.
