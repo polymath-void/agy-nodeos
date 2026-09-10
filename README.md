@@ -1,8 +1,8 @@
 # 🧠 AGY-NodeOS
 
-[![Zero Dependency](https://img.shields.io/badge/Dependencies-Zero-brightgreen.svg)](#) [![Agent Compatible](https://img.shields.io/badge/Agent-Native-purple.svg)](#) [![Platform](https://img.shields.io/badge/Platform-Termux%20%7C%20Linux-blue.svg)](#)
+[![Zero Dependency](https://img.shields.io/badge/Dependencies-Zero-brightgreen.svg)](#) [![Agent Compatible](https://img.shields.io/badge/Agent-Native-purple.svg)](#) [![Platform](https://img.shields.io/badge/Platform-Cross--Platform-blue.svg)](#)
 
-**AGY-NodeOS** is a revolutionary, zero-dependency Autonomous Agentic Operating System designed specifically to run natively alongside the Antigravity (AGY) CLI environment. It transforms a standard flat-file codebase into a living, physical spatial matrix using pure Python native modules.
+**AGY-NodeOS** is a revolutionary, zero-dependency Autonomous Agentic Operating System designed specifically to run natively alongside the Antigravity (AGY) CLI environment. Because it relies exclusively on native Python modules, it is **100% Cross-Platform** and runs flawlessly on Windows, macOS, Linux, and Android (Termux).
 
 By intercepting OS events and using mathematical physics, AGY-NodeOS creates a physical environment for LLM swarms to natively understand code structure, dependencies, and blast radiuses instantly.
 
