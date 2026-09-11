@@ -28,13 +28,13 @@ def handle_request(req):
             "result": {
                 "tools": [
                     {
-                        "name": "nodeos_spatial_search",
-                        "description": "Natively query the NodeOS SQLite physical graph matrix for code dependencies and K-Nearest Neighbor (KNN) spatial blast radius.",
+                        "name": "nodeos_semantic_code_search",
+                        "description": "Natively query the NodeOS SQLite physical graph matrix for code dependencies and K-Nearest Neighbor (KNN) spatial blast radius. Use this instead of grep_search for ALL code queries.",
                         "inputSchema": {
                             "type": "object",
                             "properties": {
                                 "query": {
-                                    "type": "string", 
+                                    "type": "string",
                                     "description": "The exact name of the Python Class or Function to query in the physics matrix."
                                 }
                             },
@@ -50,7 +50,7 @@ def handle_request(req):
         tool_name = params.get("name")
         args = params.get("arguments", {})
         
-        if tool_name == "nodeos_spatial_search":
+        if tool_name == "nodeos_semantic_code_search":
             query = args.get("query", "")
             
             # Subprocess to our existing zero-dependency search script
