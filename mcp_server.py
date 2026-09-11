@@ -9,7 +9,7 @@ def handle_request(req):
     req_id = req.get("id")
     
     # 1. Initialization Handshake
-    if method == "initialize":
+    if method in ("initialize", "server/discover"):
         return {
             "jsonrpc": "2.0",
             "id": req_id,
@@ -75,20 +75,35 @@ def handle_request(req):
     return None
 
 def main():
+    # Setup debug logging to a file in the same directory
+    log_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mcp_debug.log")
+    
+    with open(log_file, "a") as f:
+        f.write("MCP Server started.\n")
+        
     while True:
         line = sys.stdin.readline()
         if not line:
             break
+            
+        with open(log_file, "a") as f:
+            f.write(f"RECV: {line}")
+            
         try:
             req = json.loads(line)
             res = handle_request(req)
             if res:
-                sys.stdout.write(json.dumps(res) + "\n")
+                out = json.dumps(res) + "\n"
+                with open(log_file, "a") as f:
+                    f.write(f"SEND: {out}")
+                sys.stdout.write(out)
                 sys.stdout.flush()
         except Exception as e:
-            # Handle JSON parse errors or other fatal errors gracefully
             err = {"jsonrpc": "2.0", "error": {"code": -32700, "message": str(e)}}
-            sys.stdout.write(json.dumps(err) + "\n")
+            out = json.dumps(err) + "\n"
+            with open(log_file, "a") as f:
+                f.write(f"ERR: {out}\nEXCEPTION: {str(e)}\n")
+            sys.stdout.write(out)
             sys.stdout.flush()
 
 if __name__ == "__main__":
