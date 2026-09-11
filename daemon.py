@@ -24,8 +24,8 @@ class AGYRawWatchdog:
         self._initialize_state()
 
     def _should_ignore(self, path):
-        # Ignore internal OS state folders to prevent recursive loops
-        ignores = ['.jsagent', '.agents', '__pycache__', '.git']
+        # Ignore internal OS state folders and dependencies to prevent recursive loops and bloat
+        ignores = ['.jsagent', '.agents', '__pycache__', '.git', 'node_modules', 'build', 'dist', '.venv', 'venv', '.build_cache', 'site-packages', 'env']
         return any(ign in path for ign in ignores)
 
     def _initialize_state(self):
@@ -112,7 +112,25 @@ class AGYNodeOSEventHandler:
                         # Handle Swarm Agent execution
                         agent_list = workflow.get('agents', [])
                         print(f"[Swarm Dispatcher] Emitting Swarm intent for AGY external swarm: {agent_list}")
-                        print(f"[Swarm Dispatcher] Awaiting AGY Swarm pickup (Status: PENDING)...")
+                        print(f"[Swarm Dispatcher] Actively spawning AGY CLI Subprocess...")
+                        
+                        # Active AGY CLI Subprocessing
+                        prompt = f"System OS Alert: A workflow intent '{workflow.get('action')}' has been requested. Required agents: {agent_list}. Please fulfill this workflow by acting as the requested agents. When finished, update {workflow_file} status to 'completed'."
+                        cmd = f'agy --print "{prompt}"'
+                        
+                        # Run the shell command asynchronously so it doesn't block the daemon
+                        async def spawn_agent():
+                            process = await asyncio.create_subprocess_shell(
+                                cmd,
+                                stdout=asyncio.subprocess.PIPE,
+                                stderr=asyncio.subprocess.PIPE
+                            )
+                            stdout, stderr = await process.communicate()
+                            if stderr:
+                                print(f"[Swarm Dispatcher] AGY CLI Warning: {stderr.decode('utf-8').strip()}")
+                            print(f"[Swarm Dispatcher] AGY CLI Subprocess execution finished.")
+                            
+                        asyncio.create_task(spawn_agent())
                     
                     elif status == 'running':
                         print(f"[Swarm Dispatcher] AGY Swarm has picked up the task. Monitoring execution...")
