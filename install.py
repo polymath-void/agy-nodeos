@@ -72,7 +72,8 @@ Whenever operating inside a NodeOS-managed workspace (e.g., ~/Projects/SysTune),
         
     mcp_data["mcpServers"]["agy-nodeos"] = {
         "command": sys.executable,
-        "args": [mcp_server_script]
+        "args": [mcp_server_script],
+        "eager": True
     }
     
     with open(mcp_config_path, "w") as f:
