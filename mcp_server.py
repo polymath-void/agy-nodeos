@@ -40,6 +40,20 @@ def handle_request(req):
                             },
                             "required": ["query"]
                         }
+                    },
+                    {
+                        "name": "nodeos_read_file",
+                        "description": "Natively read the contents of a file inside the NodeOS matrix. Use this instead of view_file.",
+                        "inputSchema": {
+                            "type": "object",
+                            "properties": {
+                                "filepath": {
+                                    "type": "string",
+                                    "description": "The absolute or relative path to the file to read."
+                                }
+                            },
+                            "required": ["filepath"]
+                        }
                     }
                 ]
             }
@@ -64,6 +78,24 @@ def handle_request(req):
                     "content": [{"type": "text", "text": result.stdout}]
                 }
             }
+            
+        elif tool_name == "nodeos_read_file":
+            filepath = args.get("filepath", "")
+            try:
+                with open(filepath, "r") as f:
+                    content = f.read()
+                output = f"--- FILE: {filepath} ---\n" + content
+            except Exception as e:
+                output = f"Error reading file: {e}"
+                
+            return {
+                "jsonrpc": "2.0",
+                "id": req_id,
+                "result": {
+                    "content": [{"type": "text", "text": output}]
+                }
+            }
+            
         else:
             return {
                 "jsonrpc": "2.0",
