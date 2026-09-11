@@ -46,6 +46,29 @@ Whenever the USER requests to start a new project, resume a project, or build so
     else:
         print(f"\033[91m[-] Error: Could not find local skill at {local_skill_path}\033[0m")
         sys.exit(1)
+    # 4. Install Global MCP Server
+    import json
+    mcp_config_path = os.path.join(gemini_config_dir, "mcp_config.json")
+    mcp_data = {"mcpServers": {}}
+    if os.path.exists(mcp_config_path):
+        try:
+            with open(mcp_config_path, "r") as f:
+                mcp_data = json.load(f)
+        except Exception:
+            pass
+            
+    mcp_server_script = os.path.join(os.getcwd(), "mcp_server.py")
+    if "mcpServers" not in mcp_data:
+        mcp_data["mcpServers"] = {}
+        
+    mcp_data["mcpServers"]["agy-nodeos"] = {
+        "command": sys.executable,
+        "args": [mcp_server_script]
+    }
+    
+    with open(mcp_config_path, "w") as f:
+        json.dump(mcp_data, f, indent=2)
+    print(f"\033[92m[+] Installed Global MCP Server -> {mcp_config_path}\033[0m")
         
     print("\n\033[96m[ NodeOS Successfully Injected into Antigravity Global Brain! ]\033[0m")
 
