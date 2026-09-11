@@ -133,8 +133,9 @@ class NativeNodesEngine:
         conn.close()
         print(f"[Physics Engine] Bonded {edge_count} structural connections. Simulating graph clustering...")
         if edge_count > 0:
-            self.simulate_physics(ticks=100)
-            self.sync_to_sqlite()
+            import threading
+            # Run physics simulation in the background so it doesn't block the Daemon event loop
+            threading.Thread(target=self.simulate_physics, args=(100,), daemon=True).start()
 
     def simulate_physics(self, ticks=50):
         """Euler Integration of Coulomb Repulsion, Central Gravity, and Hooke's Law Springs."""
@@ -146,27 +147,28 @@ class NativeNodesEngine:
         ideal_length = 50.0  # Ideal distance between connected nodes
         center_x, center_y = 500.0, 500.0
         
-        for _ in range(ticks):
-            # Reset forces and apply central gravity
+        for tick in range(ticks):
+            # Rebuild QuadTree for rapid O(N log N) spatial queries
+            self.rebuild_qtree()
+            
             for node in self.all_nodes:
                 node.fx = (center_x - node.x) * k_gravity
                 node.fy = (center_y - node.y) * k_gravity
                 
-            # Coulomb Repulsion between ALL nodes
-            for i in range(len(self.all_nodes)):
-                for j in range(i + 1, len(self.all_nodes)):
-                    n1, n2 = self.all_nodes[i], self.all_nodes[j]
-                    dx, dy = n1.x - n2.x, n1.y - n2.y
+                # Optimized Local Repulsion: Only repel against nodes within 150px radius using QuadTree
+                range_rect = Rectangle(node.x, node.y, 150, 150)
+                nearby_nodes = self.qtree.query(range_rect)
+                
+                for other in nearby_nodes:
+                    if other == node:
+                        continue
+                    dx, dy = node.x - other.x, node.y - other.y
                     dist_sq = dx**2 + dy**2
                     if dist_sq > 0:
                         force = k_repulse / dist_sq
                         dist = math.sqrt(dist_sq)
-                        fx = force * (dx / dist)
-                        fy = force * (dy / dist)
-                        n1.fx += fx
-                        n1.fy += fy
-                        n2.fx -= fx
-                        n2.fy -= fy
+                        node.fx += force * (dx / dist)
+                        node.fy += force * (dy / dist)
                         
             # Hooke's Law Spring Attraction between CONNECTED nodes
             for n1 in self.all_nodes:
@@ -192,6 +194,8 @@ class NativeNodesEngine:
                 node.y += node.vy * time_step
                 
         self.rebuild_qtree()
+        self.sync_to_sqlite()
+        print(f"[Physics Engine] Successfully settled {len(self.all_nodes)} nodes. Syncing to SQLite.")
 
     def sync_to_sqlite(self):
         """Batch update physical positions to SQLite to save I/O overhead."""
