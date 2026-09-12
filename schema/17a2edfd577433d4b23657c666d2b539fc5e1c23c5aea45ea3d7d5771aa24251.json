@@ -1,0 +1,11 @@
+{
+    "metadata": {
+        "type": "ClassDef",
+        "name": "ModuleManifest",
+        "hash": "17a2edfd577433d4b23657c666d2b539fc5e1c23c5aea45ea3d7d5771aa24251",
+        "file": "/data/data/com.termux/files/home/Projects/ComputeRes/compute_res/core/manifest.py",
+        "line_number": 8,
+        "calls": []
+    },
+    "source": "class ModuleManifest:\n    \"\"\"\n    Standardized ComputeRes WASM & Skill Module Manifest (compute-res.json).\n    Defines security bounds, fuel limits, RAM capping, and entrypoints.\n    \"\"\"\n    def __init__(\n        self,\n        name: str,\n        version: str = \"1.0.0\",\n        wasm_binary: Optional[str] = None,\n        fuel_limit: int = 10000000,\n        memory_limit_mb: int = 64,\n        permissions: Optional[List[str]] = None,\n        entrypoint: str = \"run\",\n        description: str = \"\"\n    ):\n        self.name = name\n        self.version = version\n        self.wasm_binary = wasm_binary\n        self.fuel_limit = fuel_limit\n        self.memory_limit_mb = memory_limit_mb\n        self.permissions = permissions or [\"filesystem:read\"]\n        self.entrypoint = entrypoint\n        self.description = description\n\n    def to_dict(self) -> Dict[str, Any]:\n        return {\n            \"name\": self.name,\n            \"version\": self.version,\n            \"wasm_binary\": self.wasm_binary,\n            \"fuel_limit\": self.fuel_limit,\n            \"memory_limit_mb\": self.memory_limit_mb,\n            \"permissions\": self.permissions,\n            \"entrypoint\": self.entrypoint,\n            \"description\": self.description\n        }"
+}

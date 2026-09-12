@@ -1,6 +1,8 @@
+#!/data/data/com.termux/files/usr/bin/python3
 import asyncio
 import os
 import sys
+
 import subprocess
 import threading
 import json

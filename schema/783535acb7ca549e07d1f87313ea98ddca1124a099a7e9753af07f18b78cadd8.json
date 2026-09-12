@@ -1,0 +1,13 @@
+{
+    "metadata": {
+        "type": "FunctionDef",
+        "name": "validate_manifest_dict",
+        "hash": "783535acb7ca549e07d1f87313ea98ddca1124a099a7e9753af07f18b78cadd8",
+        "file": "/data/data/com.termux/files/home/Projects/ComputeRes/compute_res/core/manifest.py",
+        "line_number": 45,
+        "calls": [
+            "isinstance"
+        ]
+    },
+    "source": "def validate_manifest_dict(data: Dict[str, Any]) -> bool:\n    \"\"\"Validates raw dictionary against compute-res.json spec.\"\"\"\n    if not isinstance(data, dict):\n        return False\n    if \"name\" not in data or not isinstance(data[\"name\"], str):\n        return False\n    return True"
+}

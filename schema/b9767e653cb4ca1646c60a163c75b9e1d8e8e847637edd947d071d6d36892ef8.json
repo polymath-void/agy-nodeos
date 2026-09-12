@@ -1,0 +1,16 @@
+{
+    "metadata": {
+        "type": "FunctionDef",
+        "name": "cosine_similarity",
+        "hash": "b9767e653cb4ca1646c60a163c75b9e1d8e8e847637edd947d071d6d36892ef8",
+        "file": "/data/data/com.termux/files/home/Projects/ComputeRes/compute_res/memory/vector_mgr.py",
+        "line_number": 4,
+        "calls": [
+            "zip",
+            "len",
+            "sqrt",
+            "sum"
+        ]
+    },
+    "source": "def cosine_similarity(v1: List[float], v2: List[float]) -> float:\n    if not v1 or not v2 or len(v1) != len(v2):\n        return 0.0\n    dot = sum(a * b for a, b in zip(v1, v2))\n    norm1 = math.sqrt(sum(a * a for a in v1))\n    norm2 = math.sqrt(sum(b * b for b in v2))\n    if norm1 == 0 or norm2 == 0:\n        return 0.0\n    return dot / (norm1 * norm2)"
+}

@@ -1,0 +1,15 @@
+{
+    "metadata": {
+        "type": "ClassDef",
+        "name": "WASMSecuritySandbox",
+        "hash": "1c6b42fc0852a6959c3dc0d079f68e1eec3ccfa5c79e60f99d91cb63c4f7feae",
+        "file": "/data/data/com.termux/files/home/Projects/ComputeRes/compute_res/security/wasm_sandbox.py",
+        "line_number": 8,
+        "calls": [
+            "run",
+            "WASMSandboxRunner",
+            "execute_python_sandboxed"
+        ]
+    },
+    "source": "class WASMSecuritySandbox:\n    \"\"\"\n    Production Security Sandbox wrapper around WASMSandboxRunner.\n    \"\"\"\n    def __init__(self, fuel_limit: int = 10000000, memory_limit_mb: int = 64):\n        self.fuel_limit = fuel_limit\n        self.memory_limit_mb = memory_limit_mb\n        self.runner = WASMSandboxRunner(default_fuel=fuel_limit, default_mem_mb=memory_limit_mb)\n\n    def execute(self, code: str, args: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:\n        import asyncio\n        return asyncio.run(self.runner.execute_python_sandboxed(code, args=args))"
+}

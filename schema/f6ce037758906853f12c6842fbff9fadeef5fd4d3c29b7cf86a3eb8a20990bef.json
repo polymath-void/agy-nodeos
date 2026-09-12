@@ -1,0 +1,25 @@
+{
+    "metadata": {
+        "type": "ClassDef",
+        "name": "WebSocketTelemetryGateway",
+        "hash": "f6ce037758906853f12c6842fbff9fadeef5fd4d3c29b7cf86a3eb8a20990bef",
+        "file": "/data/data/com.termux/files/home/Projects/ComputeRes/compute_res/gateway/websocket_gateway.py",
+        "line_number": 9,
+        "calls": [
+            "time",
+            "serve",
+            "get_event_loop",
+            "discard",
+            "dumps",
+            "unregister",
+            "add",
+            "send",
+            "set",
+            "wait_closed",
+            "info",
+            "close",
+            "register"
+        ]
+    },
+    "source": "class WebSocketTelemetryGateway:\n    \"\"\"\n    Live WebSocket Telemetry & Event Push Gateway for ComputeRes OS.\n    Streams real-time WASM fuel metrics, CRDT updates, and kernel telemetry\n    to connected browser dashboards and external UI clients.\n    \"\"\"\n    def __init__(self, host: str = \"0.0.0.0\", port: int = 8766):\n        self.host = host\n        self.port = port\n        self.subscribers: Set[websockets.WebSocketServerProtocol] = set()\n        self.server = None\n\n    async def register(self, websocket: Any):\n        self.subscribers.add(websocket)\n        logger.info(f\"Telemetry subscriber connected from {websocket.remote_address}\")\n\n    async def unregister(self, websocket: Any):\n        self.subscribers.discard(websocket)\n        logger.info(\"Telemetry subscriber disconnected.\")\n\n    async def broadcast_event(self, event_type: str, data: Dict[str, Any]):\n        \"\"\"Broadcasts a telemetry payload to all connected subscribers.\"\"\"\n        if not self.subscribers:\n            return\n\n        payload = json.dumps({\n            \"event\": event_type,\n            \"data\": data,\n            \"timestamp\": asyncio.get_event_loop().time()\n        })\n\n        disconnected = set()\n        for ws in self.subscribers:\n            try:\n                await ws.send(payload)\n            except websockets.exceptions.ConnectionClosed:\n                disconnected.add(ws)\n\n        for ws in disconnected:\n            self.subscribers.discard(ws)\n\n    async def handle_connection(self, websocket: Any, path: str = None):\n        await self.register(websocket)\n        try:\n            async for message in websocket:\n                # Handle client ping or subscription requests if needed\n                pass\n        except websockets.exceptions.ConnectionClosed:\n            pass\n        finally:\n            await self.unregister(websocket)\n\n    async def start(self):\n        self.server = await websockets.serve(self.handle_connection, self.host, self.port)\n        logger.info(f\"WebSocket Telemetry Gateway online at ws://{self.host}:{self.port}\")\n\n    async def stop(self):\n        if self.server:\n            self.server.close()\n            await self.server.wait_closed()\n            logger.info(\"WebSocket Telemetry Gateway stopped.\")"
+}

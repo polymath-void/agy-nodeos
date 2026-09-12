@@ -1,3 +1,4 @@
+#!/data/data/com.termux/files/usr/bin/python3
 import sqlite3
 import sys
 import math
@@ -7,10 +8,14 @@ import os
 def calculate_distance(x1, y1, x2, y2):
     return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
-def search_nodes(query, db_path="agy_nodeos.db"):
+def search_nodes(query, db_path=None):
+    if db_path is None:
+        db_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "agy_nodeos.db")
+
     if not os.path.exists(db_path):
-        print(json.dumps({"error": "Database not found. Is the daemon running?"}))
+        print(json.dumps({"error": f"Database not found at {db_path}. Is the daemon running?"}))
         return
+
 
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()

@@ -1,6 +1,8 @@
+import io
 import os
 import re
 import sys
+import tokenize
 from abc import ABC, abstractmethod
 
 class UniversalStructuralChecker:
@@ -8,14 +10,41 @@ class UniversalStructuralChecker:
     def check_balanced_brackets(content, filepath):
         brackets = {'{': '}', '(': ')', '[': ']'}
         stack = []
-        lines = content.split('\n')
-        # Improved string stripping that handles escaped quotes
-        content_no_strings = re.sub(r'(".*?(?<!\\)"|\'.*?(?<!\\)\')', '""', content, flags=re.DOTALL)
-        
-        for i, line in enumerate(content_no_strings.split('\n')):
+
+        if filepath.endswith('.py'):
+            try:
+                tokens = tokenize.tokenize(io.BytesIO(content.encode('utf-8')).readline)
+                for toknum, tokval, (srow, _), _, _ in tokens:
+                    if toknum in (tokenize.COMMENT, tokenize.STRING, tokenize.ENCODING):
+                        continue
+                    if toknum == tokenize.OP:
+                        for char in tokval:
+                            if char in brackets.keys():
+                                stack.append((char, srow))
+                            elif char in brackets.values():
+                                if not stack:
+                                    return f"[{filepath}:L{srow}] Structural Error: Unmatched closing '{char}'"
+                                top, line_num = stack.pop()
+                                if brackets[top] != char:
+                                    return f"[{filepath}:L{srow}] Structural Error: Mismatched brackets. Expected '{brackets[top]}' but found '{char}'"
+                if stack:
+                    top, line_num = stack.pop()
+                    return f"[{filepath}:L{line_num}] Structural Error: Unmatched opening '{top}'"
+                return None
+            except Exception:
+                pass  # Fall back to general regex checker if tokenization fails
+
+        # Fallback for non-Python files (or malformed Python)
+        # Strip comments first
+        clean_content = re.sub(r'//.*', '', content)
+        clean_content = re.sub(r'/\*.*?\*/', '', clean_content, flags=re.DOTALL)
+        clean_content = re.sub(r'(""".*?"""|\'\'\'.*?\'\'\'|".*?(?<!\\)"|\'.*?(?<!\\)\')', '""', clean_content, flags=re.DOTALL)
+
+        lines = clean_content.split('\n')
+        for i, line in enumerate(lines):
             for char in line:
                 if char in brackets.keys():
-                    stack.append((char, i+1))
+                    stack.append((char, i + 1))
                 elif char in brackets.values():
                     if not stack:
                         return f"[{filepath}:L{i+1}] Structural Error: Unmatched closing '{char}'"
@@ -26,6 +55,9 @@ class UniversalStructuralChecker:
             top, line_num = stack.pop()
             return f"[{filepath}:L{line_num}] Structural Error: Unmatched opening '{top}'"
         return None
+
+
+
 
 class LanguageHandler(ABC):
     @abstractmethod

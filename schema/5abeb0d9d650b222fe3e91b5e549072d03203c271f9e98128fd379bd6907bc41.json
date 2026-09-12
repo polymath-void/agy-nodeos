@@ -1,0 +1,38 @@
+{
+    "metadata": {
+        "type": "ClassDef",
+        "name": "WebRTCMeshRouter",
+        "hash": "5abeb0d9d650b222fe3e91b5e549072d03203c271f9e98128fd379bd6907bc41",
+        "file": "/data/data/com.termux/files/home/Projects/ComputeRes/compute_res/network/mesh.py",
+        "line_number": 19,
+        "calls": [
+            "connect",
+            "RTCSessionDescription",
+            "broadcast_crdt_sync",
+            "list",
+            "RTCPeerConnection",
+            "warning",
+            "send_signal",
+            "hasattr",
+            "createAnswer",
+            "items",
+            "to_dict",
+            "merge",
+            "loads",
+            "setLocalDescription",
+            "setRemoteDescription",
+            "SignalingClient",
+            "get",
+            "dumps",
+            "StateCRDT",
+            "info",
+            "sleep",
+            "create_task",
+            "error",
+            "send",
+            "listen",
+            "on"
+        ]
+    },
+    "source": "class WebRTCMeshRouter:\n    \"\"\"\n    Bridges local ZeroMQ IPC Broker to the decentralized WebRTC Swarm.\n    Uses SignalingClient for P2P SDP negotiation and StateCRDT for conflict-free memory sync.\n    \"\"\"\n    def __init__(self, node_id: str, swarm_id: str, signaling_url: str = \"ws://127.0.0.1:8765\"):\n        self.node_id = node_id\n        self.swarm_id = swarm_id\n        self.signaling_url = signaling_url\n        self.crdt = StateCRDT(node_id=node_id)\n\n        self.peers: Dict[str, Any] = {}\n        self.data_channels: Dict[str, Any] = {}\n        self.signaling_client: Optional[SignalingClient] = None\n\n    async def handle_incoming_signal(self, data: Dict[str, Any]):\n        msg_type = data.get(\"type\")\n        sender_id = data.get(\"sender_id\")\n        payload = data.get(\"payload\", {})\n\n        if msg_type == \"offer\" and AIORTC_AVAILABLE:\n            logger.info(f\"Received P2P Offer from {sender_id}\")\n            pc = RTCPeerConnection()\n            self.peers[sender_id] = pc\n\n            @pc.on(\"datachannel\")\n            def on_datachannel(channel):\n                self.data_channels[sender_id] = channel\n                logger.info(f\"P2P DataChannel connected with {sender_id}\")\n\n                @channel.on(\"message\")\n                def on_message(message):\n                    try:\n                        packet = json.loads(message)\n                        if packet.get(\"type\") == \"crdt_sync\":\n                            self.crdt.merge(packet.get(\"crdt\", {}))\n                            logger.info(f\"Merged CRDT state delta from peer {sender_id}\")\n                    except Exception as e:\n                        logger.error(f\"Error parsing P2P message: {e}\")\n\n            sdp = payload.get(\"sdp\")\n            if sdp:\n                await pc.setRemoteDescription(RTCSessionDescription(sdp=sdp, type=\"offer\"))\n                answer = await pc.createAnswer()\n                await pc.setLocalDescription(answer)\n                if self.signaling_client:\n                    await self.signaling_client.send_signal(\n                        sender_id, \"answer\", {\"sdp\": pc.localDescription.sdp}\n                    )\n\n        elif msg_type == \"answer\" and AIORTC_AVAILABLE:\n            pc = self.peers.get(sender_id)\n            if pc and payload.get(\"sdp\"):\n                await pc.setRemoteDescription(RTCSessionDescription(sdp=payload[\"sdp\"], type=\"answer\"))\n                logger.info(f\"Established P2P answer with {sender_id}\")\n\n    async def broadcast_crdt_sync(self):\n        \"\"\"Periodically syncs StateCRDT deltas across active P2P data channels.\"\"\"\n        while True:\n            await asyncio.sleep(5)\n            if not self.data_channels:\n                continue\n\n            sync_packet = json.dumps({\n                \"type\": \"crdt_sync\",\n                \"crdt\": self.crdt.to_dict()\n            })\n\n            for peer_id, channel in list(self.data_channels.items()):\n                try:\n                    if hasattr(channel, \"readyState\") and channel.readyState == \"open\":\n                        channel.send(sync_packet)\n                except Exception as e:\n                    logger.warning(f\"Failed to send P2P CRDT sync to {peer_id}: {e}\")\n\n    async def start(self):\n        \"\"\"Starts the WebRTC Mesh Router daemon.\"\"\"\n        logger.info(f\"[{self.node_id}] Initializing Decentralized WebRTC Mesh Router...\")\n\n        if not AIORTC_AVAILABLE:\n            logger.warning(\"aiortc/websockets unavailable. P2P WebRTC data channels running in fallback mode.\")\n            return\n\n        self.signaling_client = SignalingClient(server_url=self.signaling_url, node_id=self.node_id)\n        self.signaling_client.on_message_callback = self.handle_incoming_signal\n\n        connected = await self.signaling_client.connect()\n        if connected:\n            asyncio.create_task(self.signaling_client.listen())\n            asyncio.create_task(self.broadcast_crdt_sync())"
+}

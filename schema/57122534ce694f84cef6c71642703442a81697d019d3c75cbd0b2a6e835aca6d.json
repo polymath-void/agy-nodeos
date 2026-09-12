@@ -1,0 +1,15 @@
+{
+    "metadata": {
+        "type": "ClassDef",
+        "name": "WasmContainer",
+        "hash": "57122534ce694f84cef6c71642703442a81697d019d3c75cbd0b2a6e835aca6d",
+        "file": "/data/data/com.termux/files/home/Projects/ComputeRes/compute_res/sandbox/wasm_engine.py",
+        "line_number": 10,
+        "calls": [
+            "run",
+            "WASMSandboxRunner",
+            "execute_python_sandboxed"
+        ]
+    },
+    "source": "class WasmContainer:\n    \"\"\"\n    Production WASM Container delegating directly to WASMSandboxRunner.\n    \"\"\"\n    def __init__(self, tool_name: str = \"default_tool\", initial_capabilities: Optional[Dict[str, Any]] = None):\n        self.tool_name = tool_name\n        self.capabilities = initial_capabilities or {}\n        self.runner = WASMSandboxRunner()\n\n    def execute_code(self, code: str, args: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:\n        import asyncio\n        return asyncio.run(self.runner.execute_python_sandboxed(code, args=args))"
+}

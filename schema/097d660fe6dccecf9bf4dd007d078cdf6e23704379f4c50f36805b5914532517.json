@@ -1,0 +1,20 @@
+{
+    "metadata": {
+        "type": "FunctionDef",
+        "name": "load_manifest",
+        "hash": "097d660fe6dccecf9bf4dd007d078cdf6e23704379f4c50f36805b5914532517",
+        "file": "/data/data/com.termux/files/home/Projects/ComputeRes/compute_res/core/manifest.py",
+        "line_number": 53,
+        "calls": [
+            "get",
+            "open",
+            "ValueError",
+            "validate_manifest_dict",
+            "exists",
+            "ModuleManifest",
+            "FileNotFoundError",
+            "load"
+        ]
+    },
+    "source": "def load_manifest(filepath: str) -> ModuleManifest:\n    \"\"\"Loads and parses a compute-res.json file.\"\"\"\n    if not os.path.exists(filepath):\n        raise FileNotFoundError(f\"Manifest file not found: {filepath}\")\n\n    with open(filepath, \"r\", encoding=\"utf-8\") as f:\n        data = json.load(f)\n\n    if not validate_manifest_dict(data):\n        raise ValueError(f\"Invalid compute-res.json schema in {filepath}\")\n\n    return ModuleManifest(\n        name=data.get(\"name\"),\n        version=data.get(\"version\", \"1.0.0\"),\n        wasm_binary=data.get(\"wasm_binary\"),\n        fuel_limit=data.get(\"fuel_limit\", 10000000),\n        memory_limit_mb=data.get(\"memory_limit_mb\", 64),\n        permissions=data.get(\"permissions\", [\"filesystem:read\"]),\n        entrypoint=data.get(\"entrypoint\", \"run\"),\n        description=data.get(\"description\", \"\")\n    )"
+}

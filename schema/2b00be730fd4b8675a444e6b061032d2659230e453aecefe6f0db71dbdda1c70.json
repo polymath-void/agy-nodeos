@@ -1,0 +1,25 @@
+{
+    "metadata": {
+        "type": "FunctionDef",
+        "name": "main",
+        "hash": "2b00be730fd4b8675a444e6b061032d2659230e453aecefe6f0db71dbdda1c70",
+        "file": "/data/data/com.termux/files/home/Projects/ComputeRes/compute_res/cli.py",
+        "line_number": 38,
+        "calls": [
+            "ArgumentParser",
+            "add_argument",
+            "run",
+            "ComputeResClient",
+            "_check",
+            "execute_dynamic_code",
+            "parse_args",
+            "add_parser",
+            "boot_kernel",
+            "print",
+            "print_help",
+            "add_subparsers",
+            "build_skill_package"
+        ]
+    },
+    "source": "def main():\n    parser = argparse.ArgumentParser(description=\"ComputeRes AI Operating System CLI Tool\")\n    subparsers = parser.add_subparsers(dest=\"command\", help=\"Available commands\")\n\n    # Command: boot\n    boot_parser = subparsers.add_parser(\"boot\", help=\"Boot the ComputeRes Kernel daemon\")\n\n    # Command: build\n    build_parser = subparsers.add_parser(\"build\", help=\"Package a skill or binary into a compute-res.json bundle\")\n    build_parser.add_argument(\"--source\", required=True, help=\"Path to source python file or skill directory\")\n    build_parser.add_argument(\"--name\", required=True, help=\"Name of the skill module\")\n    build_parser.add_argument(\"--version\", default=\"1.0.0\", help=\"Version string\")\n    build_parser.add_argument(\"--fuel\", type=int, default=10000000, help=\"Fuel allocation limit\")\n\n    # Command: status\n    status_parser = subparsers.add_parser(\"status\", help=\"Check ComputeRes kernel status\")\n\n    args = parser.parse_args()\n\n    if args.command == \"build\":\n        build_skill_package(args.source, args.name, args.version, args.fuel)\n\n    elif args.command == \"boot\":\n        print(\"\ud83d\ude80 Booting ComputeRes Kernel Daemon...\")\n        from compute_res.orchestration.kernel import main as boot_kernel\n        boot_kernel()\n\n    elif args.command == \"status\":\n        async def _check():\n            client = ComputeResClient()\n            res = await client.execute_dynamic_code(\"def run(**kwargs): return {'kernel': 'ONLINE'}\")\n            print(\"ComputeRes Kernel Status:\", res)\n        asyncio.run(_check())\n\n    else:\n        parser.print_help()"
+}

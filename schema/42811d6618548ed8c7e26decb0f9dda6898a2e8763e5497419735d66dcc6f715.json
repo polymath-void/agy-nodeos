@@ -1,0 +1,22 @@
+{
+    "metadata": {
+        "type": "ClassDef",
+        "name": "MCPBridgeDaemon",
+        "hash": "42811d6618548ed8c7e26decb0f9dda6898a2e8763e5497419735d66dcc6f715",
+        "file": "/data/data/com.termux/files/home/Projects/ComputeRes/compute_res/orchestration/mcp_bridge.py",
+        "line_number": 13,
+        "calls": [
+            "exists",
+            "execute_python_sandboxed",
+            "run",
+            "_proxy_to_sandbox",
+            "open",
+            "read",
+            "get",
+            "locals",
+            "info",
+            "WASMSandboxRunner"
+        ]
+    },
+    "source": "class MCPBridgeDaemon:\n    \"\"\"\n    Real MCP Bridge Daemon connecting external MCP requests directly to the ComputeRes WASM/AST Sandbox.\n    \"\"\"\n    def __init__(self, config_path: str = None):\n        self.sandbox_runner = WASMSandboxRunner()\n\n    def process_mcp_intent(self, payload: Dict[str, Any]) -> Dict[str, Any]:\n        action = payload.get(\"action\")\n        if action == \"execute_tool\":\n            tool_name = payload.get(\"tool_name\")\n            args = payload.get(\"args\", {})\n            logger.info(f\"Executing MCP Tool: {tool_name} with args: {args}\")\n            return self._proxy_to_sandbox(tool_name, args)\n\n        elif action == \"read_resource\":\n            uri = payload.get(\"uri\")\n            logger.info(f\"Reading MCP Resource: {uri}\")\n            if os.path.exists(uri):\n                with open(uri, \"r\", encoding=\"utf-8\") as f:\n                    return {\"content\": f.read()}\n            return {\"error\": f\"Resource not found: {uri}\"}\n\n        else:\n            return {\"error\": f\"Unknown action: {action}\"}\n\n    def _proxy_to_sandbox(self, tool_name: str, args: Dict[str, Any]) -> Dict[str, Any]:\n        \"\"\"Proxies MCP tool execution directly to WASMSandboxRunner.\"\"\"\n        code = payload.get(\"code\") if \"payload\" in locals() else args.get(\"code\")\n        if code:\n            import asyncio\n            return asyncio.run(self.sandbox_runner.execute_python_sandboxed(code, args=args))\n        return {\"status\": \"success\", \"result\": f\"Executed tool '{tool_name}'\", \"args\": args}"
+}

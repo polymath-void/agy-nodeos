@@ -1,0 +1,11 @@
+{
+    "metadata": {
+        "type": "FunctionDef",
+        "name": "test_hello",
+        "hash": "35db0c3143953cdc2d000c17ce952e6a012631497718e47b5473d4cf3be5394b",
+        "file": "/data/data/com.termux/files/home/Projects/sample_test.py",
+        "line_number": 1,
+        "calls": []
+    },
+    "source": "def test_hello():\n    return 'Hello from NodeOS Native Tools!'"
+}

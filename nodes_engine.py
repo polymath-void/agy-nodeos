@@ -2,7 +2,7 @@ import math
 import sqlite3
 
 class Point:
-    def __init__(self, x, y, node_id, node_type, mass=1.0, name="unknown", calls=None):
+    def __init__(self, x, y, node_id, node_type, mass=1.0, name="unknown", calls=None, filepath=None):
         self.x = x
         self.y = y
         self.vx = 0.0
@@ -15,6 +15,7 @@ class Point:
         self.name = name
         self.calls = calls if calls else []
         self.edges = []
+        self.filepath = filepath
 
 class Rectangle:
     def __init__(self, x, y, w, h):
@@ -88,12 +89,13 @@ class NativeNodesEngine:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         try:
-            cursor.execute("SELECT node_id, node_type, x_coord, y_coord, name FROM nodes")
+            cursor.execute("SELECT node_id, node_type, x_coord, y_coord, name, filepath FROM nodes")
             rows = cursor.fetchall()
             for row in rows:
                 if row[2] is not None and row[3] is not None:
                     name = row[4] if len(row) > 4 else "unknown"
-                    p = Point(row[2], row[3], row[0], row[1], name=name)
+                    filepath = row[5] if len(row) > 5 else None
+                    p = Point(row[2], row[3], row[0], row[1], name=name, filepath=filepath)
                     self.all_nodes.append(p)
                     self.qtree.insert(p)
             print(f"[Physics Engine] Hydrated {len(self.all_nodes)} kinetic nodes.")
@@ -195,7 +197,7 @@ class NativeNodesEngine:
                 
         self.rebuild_qtree()
         self.sync_to_sqlite()
-        print(f"[Physics Engine] Successfully settled {len(self.all_nodes)} nodes. Syncing to SQLite.")
+        sys.stderr.write(f"[Physics Engine] Successfully settled {len(self.all_nodes)} nodes. Syncing to SQLite.\n")
 
     def sync_to_sqlite(self):
         """Batch update physical positions to SQLite to save I/O overhead."""
@@ -203,30 +205,33 @@ class NativeNodesEngine:
         cursor = conn.cursor()
         for p in self.all_nodes:
             cursor.execute('''
-                INSERT INTO nodes (node_id, node_type, name, x_coord, y_coord, last_updated)
-                VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                INSERT INTO nodes (node_id, node_type, name, filepath, x_coord, y_coord, last_updated)
+                VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
                 ON CONFLICT(node_id) DO UPDATE SET 
                     name=excluded.name, 
+                    filepath=excluded.filepath,
                     x_coord=excluded.x_coord, 
                     y_coord=excluded.y_coord, 
                     last_updated=excluded.last_updated
-            ''', (p.node_id, p.node_type, p.name, p.x, p.y))
+            ''', (p.node_id, p.node_type, p.name, p.filepath, p.x, p.y))
         conn.commit()
         conn.close()
 
-    def add_node(self, node_id, node_type, name="unknown", calls=None, parent_x=500, parent_y=500):
+    def add_node(self, node_id, node_type, name="unknown", calls=None, parent_x=500, parent_y=500, filepath=None):
         import random
         drop_x = parent_x + random.uniform(-10, 10)
         drop_y = parent_y + random.uniform(-10, 10)
         
         existing = next((n for n in self.all_nodes if n.node_id == node_id), None)
         if not existing:
-            p = Point(drop_x, drop_y, node_id, node_type, name=name, calls=calls)
+            p = Point(drop_x, drop_y, node_id, node_type, name=name, calls=calls, filepath=filepath)
             self.all_nodes.append(p)
-            print(f"[Physics Engine] Dropped {node_type} '{name}' into kinetic simulation.")
+            sys.stderr.write(f"[Physics Engine] Dropped {node_type} '{name}' into kinetic simulation.\n")
             return p
         else:
             existing.name = name
+            if filepath:
+                existing.filepath = filepath
             if calls:
                 existing.calls = calls
             return existing

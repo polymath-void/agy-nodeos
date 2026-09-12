@@ -1,0 +1,13 @@
+{
+    "metadata": {
+        "type": "ClassDef",
+        "name": "PhysicsTest",
+        "hash": "a348bd14b63448d2231e7e28f09db7a7a46b00ed3f049a4c0ba50648be9ec1a7",
+        "file": "/data/data/com.termux/files/home/Projects/test_multiline_fix.py",
+        "line_number": 1,
+        "calls": [
+            "print"
+        ]
+    },
+    "source": "class PhysicsTest:\n    def execute(self):\n        print(\"[Physics Engine] Running test\")"
+}
