@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/python3
+#!/usr/bin/env python3
 import os
 import sys
 import glob
@@ -17,13 +17,18 @@ def resolve_target(target, db_path=None):
     if os.path.exists(target) and os.path.isfile(target):
         return os.path.abspath(target)
 
-    # 3. Common Workspace Relative Bases
+    # 3. Dynamic Portable Workspace Relative Bases
+    home = os.path.expanduser("~")
+    nodeos_dir = os.path.dirname(os.path.realpath(__file__))
+    projects_dir = os.environ.get("PROJECTS_DIR", os.path.join(home, "Projects"))
+    config_dir = os.path.join(home, ".gemini", "config")
+
     base_dirs = [
         os.getcwd(),
-        "/data/data/com.termux/files/home/Projects/agy-nodeos",
-        "/data/data/com.termux/files/home/Projects",
-        "/data/data/com.termux/files/home/.gemini/config",
-        "/data/data/com.termux/files/home"
+        nodeos_dir,
+        projects_dir,
+        config_dir,
+        home
     ]
     for base in base_dirs:
         candidate = os.path.join(base, target)

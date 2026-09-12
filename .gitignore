@@ -2,6 +2,8 @@ __pycache__/
 *.pyc
 agy_nodeos.db
 daemon.log
+mcp_debug.log
+*.log
 workflow.json
 .jsagent/
 .agents/agents/

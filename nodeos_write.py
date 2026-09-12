@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/python3
+#!/usr/bin/env python3
 import os
 import sys
 import ast
@@ -19,7 +19,9 @@ def write_file(filepath, content, overwrite=True):
         if resolved:
             target_path = resolved
         else:
-            base = os.getcwd() if os.path.exists(os.getcwd()) else "/data/data/com.termux/files/home/Projects"
+            home = os.path.expanduser("~")
+            projects_dir = os.environ.get("PROJECTS_DIR", os.path.join(home, "Projects"))
+            base = os.getcwd() if os.path.exists(os.getcwd()) else projects_dir
             target_path = os.path.abspath(os.path.join(base, filepath))
     else:
         target_path = os.path.abspath(filepath)
