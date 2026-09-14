@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agy-nodeos"
+version = "1.0.0"
+description = "A zero-dependency Autonomous Agentic Swarm Operating System."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name="Polymath Void" },
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.scripts]
+agy-nodeos-daemon = "agy_nodeos.daemon:daemonize_and_run"
+agy-nodeos-injector = "agy_nodeos.scripts.intent_injector:main"
+agy-nodeos-stopper = "agy_nodeos.scripts.intent_stopper:main"

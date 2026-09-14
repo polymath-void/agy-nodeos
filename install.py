@@ -53,12 +53,20 @@ Whenever operating inside a NodeOS-managed workspace (e.g., ~/Projects/SysTune),
         dest_skill_file = os.path.join(nodeos_skill_dest, "SKILL.md")
         shutil.copy(local_skill_path, dest_skill_file)
         print(f"\033[92m[+] Installed Global Skill -> {dest_skill_file}\033[0m")
+        
+        # Also copy hooks.json to the global skill directory for templates
+        local_hooks = os.path.join(os.getcwd(), "hooks.json")
+        if os.path.exists(local_hooks):
+            dest_hooks = os.path.join(nodeos_skill_dest, "hooks.json")
+            shutil.copy(local_hooks, dest_hooks)
+            print(f"\033[92m[+] Installed Global Hook Template -> {dest_hooks}\033[0m")
     else:
         print(f"\033[91m[-] Error: Could not find local skill at {local_skill_path}\033[0m")
         sys.exit(1)
     # MCP Server has been fully deprecated in favor of native hooks and local `.agents/rules/`.
         
     print("\n\033[96m[ NodeOS Successfully Injected into Antigravity Global Brain! ]\033[0m")
+    print("\033[93m[!] Note: You can now install the Python core via: pip install .\033[0m")
 
 if __name__ == "__main__":
     install_nodeos()

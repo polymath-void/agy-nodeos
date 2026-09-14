@@ -1,7 +1,7 @@
 import json
 import os
 
-WORKFLOW_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "workflow.json")
+WORKFLOW_FILE = os.path.join(os.getcwd(), "workflow.json")
 
 def main():
     if not os.path.exists(WORKFLOW_FILE):

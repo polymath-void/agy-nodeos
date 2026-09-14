@@ -3,17 +3,16 @@ import asyncio
 import os
 import sys
 
-# Ensure scripts directory is in path for our new Swarm OS feature engines
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts'))
+# We are now a fully packaged module. No sys.path hacking required.
 
 import subprocess
 import threading
 import json
 from multiprocessing.connection import Listener
 
-from graph_manager import AGYGraphManager
-from jage_engine import JageASTEngine
-from nodes_engine import NativeNodesEngine
+from agy_nodeos.graph_manager import AGYGraphManager
+from agy_nodeos.jage_engine import JageASTEngine
+from agy_nodeos.nodes_engine import NativeNodesEngine
 
 class AGYRawWatchdog:
     """
@@ -98,7 +97,7 @@ class AGYNodeOSEventHandler:
             # -- BEGIN NEW SWARM OS FEATURES --
             if event_type == "modified":
                 try:
-                    from blast_radius_engine import BlastRadiusEngine
+                    from agy_nodeos.scripts.blast_radius_engine import BlastRadiusEngine
                     br_engine = BlastRadiusEngine(db_path=self.graph.db_path, workspace=self.graph.workspace, threshold=10)
                     br_engine.enforce_threshold(filepath)
                 except Exception as e:
@@ -106,7 +105,7 @@ class AGYNodeOSEventHandler:
                     
             elif event_type == "created":
                 try:
-                    from ghost_writer_engine import GhostWriterEngine
+                    from agy_nodeos.scripts.ghost_writer_engine import GhostWriterEngine
                     gw_engine = GhostWriterEngine(workspace_root=self.graph.workspace, db_name=self.graph.db_path)
                     gw_engine.execute_pipeline(filepath)
                 except Exception as e:
