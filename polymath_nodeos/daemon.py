@@ -10,9 +10,9 @@ import threading
 import json
 from multiprocessing.connection import Listener
 
-from agy_nodeos.graph_manager import AGYGraphManager
-from agy_nodeos.jage_engine import JageASTEngine
-from agy_nodeos.nodes_engine import NativeNodesEngine
+from polymath_nodeos.graph_manager import AGYGraphManager
+from polymath_nodeos.jage_engine import JageASTEngine
+from polymath_nodeos.nodes_engine import NativeNodesEngine
 
 class AGYRawWatchdog:
     """
@@ -97,7 +97,7 @@ class AGYNodeOSEventHandler:
             # -- BEGIN NEW SWARM OS FEATURES --
             if event_type == "modified":
                 try:
-                    from agy_nodeos.scripts.blast_radius_engine import BlastRadiusEngine
+                    from polymath_nodeos.scripts.blast_radius_engine import BlastRadiusEngine
                     br_engine = BlastRadiusEngine(db_path=self.graph.db_path, workspace=self.graph.workspace, threshold=10)
                     br_engine.enforce_threshold(filepath)
                 except Exception as e:
@@ -105,7 +105,7 @@ class AGYNodeOSEventHandler:
                     
             elif event_type == "created":
                 try:
-                    from agy_nodeos.scripts.ghost_writer_engine import GhostWriterEngine
+                    from polymath_nodeos.scripts.ghost_writer_engine import GhostWriterEngine
                     gw_engine = GhostWriterEngine(workspace_root=self.graph.workspace, db_name=self.graph.db_path)
                     gw_engine.execute_pipeline(filepath)
                 except Exception as e:

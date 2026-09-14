@@ -1,8 +1,8 @@
-# 🧠 AGY-NodeOS: The Autonomous Swarm Operating System
+# 🧠 Polymath-NodeOS: The Autonomous Swarm Operating System
 
 [![Zero Dependency](https://img.shields.io/badge/Dependencies-Zero-brightgreen.svg?style=for-the-badge)](#) [![Agent Compatible](https://img.shields.io/badge/Agent-Native-purple.svg?style=for-the-badge)](#) [![Platform](https://img.shields.io/badge/Platform-Cross--Platform-blue.svg?style=for-the-badge)](#) [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg?style=for-the-badge)](#) [![License](https://img.shields.io/badge/License-MIT-gray.svg?style=for-the-badge)](#)
 
-**AGY-NodeOS** is a zero-dependency Autonomous Agentic Operating System designed specifically to run natively alongside the **Antigravity (AGY)** CLI environment. By intercepting OS events and using advanced mathematical physics—specifically modeling code components using a Native QuadTree matrix, Hooke's Law, and Coulomb Repulsion—AGY-NodeOS creates a physical environment for LLM swarms to natively understand code structure, dependencies, and blast radiuses instantly.
+**Polymath-NodeOS** is a zero-dependency Autonomous Agentic Operating System designed specifically to run natively alongside the **Antigravity (AGY)** CLI environment. By intercepting OS events and using advanced mathematical physics—specifically modeling code components using a Native QuadTree matrix, Hooke's Law, and Coulomb Repulsion—Polymath-NodeOS creates a physical environment for LLM swarms to natively understand code structure, dependencies, and blast radiuses instantly.
 
 This project is 100% cross-platform and runs flawlessly on **Windows, macOS, Linux, and Android (Termux)**.
 
@@ -10,7 +10,7 @@ This project is 100% cross-platform and runs flawlessly on **Windows, macOS, Lin
 
 ## 🚀 Key Features & Real-World Use Cases
 
-The true value of AGY-NodeOS is curing the "blind spot" problem that plagues traditional AI coding agents. Instead of blindly modifying files and breaking downstream dependencies, NodeOS mathematically calculates the structural layout of your codebase into a native SQLite database (`agy_nodeos.db`).
+The true value of Polymath-NodeOS is curing the "blind spot" problem that plagues traditional AI coding agents. Instead of blindly modifying files and breaking downstream dependencies, NodeOS mathematically calculates the structural layout of your codebase into a native SQLite database (`agy_nodeos.db`).
 
 ### 1. Real-Time Blast Radius Warnings 💥
 *   **The Problem:** An agent changes a core utility function without realizing it breaks 14 deeply nested components.
@@ -32,7 +32,7 @@ The true value of AGY-NodeOS is curing the "blind spot" problem that plagues tra
 
 ## 🛠 Installation Guide (For Users)
 
-AGY-NodeOS is designed for frictionless installation.
+Polymath-NodeOS is designed for frictionless installation.
 
 ### Method 1: The One-Click Auto-Install (Recommended)
 If you are using the Antigravity IDE, simply cloning this repository and opening the workspace will automatically trigger the `.agents/hooks.json` script. The system will seamlessly install itself into your global environment.
@@ -51,12 +51,12 @@ python install.py
 
 ## 📖 Usage Guide
 
-AGY-NodeOS works silently in the background to empower your AI agents. 
+Polymath-NodeOS works silently in the background to empower your AI agents. 
 
 ### Starting the OS
 To initialize NodeOS in a project directory, you or your agent can start the background daemon:
 ```bash
-python daemon.py --run-as-daemon
+polymath-nodeos-daemon
 ```
 *Note: In properly configured workspaces, the daemon automatically boots when the agent initializes thanks to the AGY Customization Engine (`PreInvocation` hook).*
 

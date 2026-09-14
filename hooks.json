@@ -12,7 +12,7 @@
     "PreInvocation": [
       {
         "type": "command",
-        "command": "pgrep -f 'agy-nodeos-daemon' > /dev/null || (nohup agy-nodeos-daemon > daemon.log 2>&1 &)",
+        "command": "pgrep -f 'polymath-nodeos-daemon' > /dev/null || (nohup polymath-nodeos-daemon > daemon.log 2>&1 &)",
         "timeout": 5
       }
     ]
@@ -21,13 +21,13 @@
     "PreInvocation": [
       {
         "type": "command",
-        "command": "agy-nodeos-injector"
+        "command": "polymath-nodeos-injector"
       }
     ],
     "Stop": [
       {
         "type": "command",
-        "command": "agy-nodeos-stopper"
+        "command": "polymath-nodeos-stopper"
       }
     ]
   }

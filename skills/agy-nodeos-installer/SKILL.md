@@ -23,7 +23,7 @@ cp ~/.gemini/config/skills/agy-nodeos-installer/hooks.json .agents/hooks.json
 Once the hook is copied, the `agy-nodeos-boot` script will automatically trigger on the very next `PreInvocation` event (which means the next time the agent is prompted). 
 
 The hook executes the following:
-`pgrep -f 'agy-nodeos-daemon' > /dev/null || (nohup agy-nodeos-daemon > daemon.log 2>&1 &)`
+`pgrep -f 'polymath-nodeos-daemon' > /dev/null || (nohup polymath-nodeos-daemon > daemon.log 2>&1 &)`
 
 This guarantees the native Python AST Engine, SQLite Graph Manager, and QuadTree Spatial Physics Matrix are running silently in the background 24/7.
 
