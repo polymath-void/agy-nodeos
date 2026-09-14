@@ -38,14 +38,14 @@ Polymath-NodeOS is designed for frictionless installation.
 If you are using the Antigravity IDE, simply cloning this repository and opening the workspace will automatically trigger the `.agents/hooks.json` script. The system will seamlessly install itself into your global environment.
 
 ### Method 2: Manual Installation
-Navigate to the repository root and run:
+Install the package globally via pip:
 ```bash
-python install.py
+pip install polymath-nodeos
 ```
 **What this does:**
-1. Installs the `nodeos_standard.md` rule globally.
-2. Deploys the `agy-nodeos-installer` skill.
-3. Grants your AGY agents immediate global awareness of the NodeOS interaction paradigm.
+1. Installs the `polymath-nodeos-daemon` CLI globally.
+2. Allows you to instantly boot the Swarm OS in any folder.
+3. Automatically triggers your swarm agents to read `workflow.json`.
 
 ---
 
