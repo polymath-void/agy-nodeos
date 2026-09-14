@@ -44,19 +44,29 @@ class AGYRawWatchdog:
         print(f"[Raw Watchdog] Natively polling {self.directory} every {self.interval}s...")
         while self.running:
             await asyncio.sleep(self.interval)
+            current_files = set()
             for root, _, files in os.walk(self.directory):
                 if self._should_ignore(root):
                     continue
                 for file in files:
                     if file.endswith(('.py', '.json')):
                         path = os.path.join(root, file)
+                        current_files.add(path)
                         try:
                             mtime = os.stat(path).st_mtime
-                            if path not in self.state or mtime > self.state[path]:
+                            if path not in self.state:
                                 self.state[path] = mtime
-                                self.callback(path)
+                                self.callback(path, "created")
+                            elif mtime > self.state[path]:
+                                self.state[path] = mtime
+                                self.callback(path, "modified")
                         except FileNotFoundError:
                             pass
+            
+            deleted_files = set(self.state.keys()) - current_files
+            for path in deleted_files:
+                self.callback(path, "deleted")
+                del self.state[path]
 
 class AGYNodeOSEventHandler:
     def __init__(self, jage, spatial, graph, loop):
@@ -65,20 +75,28 @@ class AGYNodeOSEventHandler:
         self.graph = graph
         self.loop = loop
 
-    def on_modified(self, filepath):
-        print(f"\n[Daemon] Detected modification in: {filepath}")
-        
-        if filepath.endswith('.json'):
-            print(f"[Event Loop] Picked up agent JSON workflow from {filepath}!")
-            asyncio.run_coroutine_threadsafe(
-                self.dispatch_workflow([{'hash': 'workflow', 'type': 'JSON_Task', 'file': filepath}]), self.loop
-            )
-            return
-        
-        ast_nodes = self.jage.parse_file(filepath)
-        if ast_nodes:
-            for node in ast_nodes:
-                self.spatial.add_node(node['hash'], node['type'])
+    def on_event(self, filepath, event_type):
+        if event_type in ("created", "modified"):
+            print(f"\n[Daemon] Detected {event_type} in: {filepath}")
+            
+            if filepath.endswith('.json'):
+                print(f"[Event Loop] Picked up agent JSON workflow from {filepath}!")
+                asyncio.run_coroutine_threadsafe(
+                    self.dispatch_workflow([{'hash': 'workflow', 'type': 'JSON_Task', 'file': filepath}]), self.loop
+                )
+                return
+            
+            ast_nodes = self.jage.parse_file(filepath)
+            if ast_nodes:
+                for node in ast_nodes:
+                    self.spatial.add_node(node['hash'], node['type'], node.get('name', 'unknown'), node.get('calls', []), filepath=filepath)
+                self.spatial.resolve_edges()
+        elif event_type == "deleted":
+            print(f"\n[Daemon] Detected deletion of: {filepath}")
+            if not filepath.endswith('.json'):
+                self.graph.purge_file_nodes(filepath)
+                self.spatial.remove_nodes_by_file(filepath)
+                self.jage.purge_file_cache(filepath)
 
     async def dispatch_workflow(self, nodes):
         """True Swarm Dispatcher: Parses JSON and emits intents for AGY Agents to execute, acting as the state manager."""
@@ -86,8 +104,20 @@ class AGYNodeOSEventHandler:
             if node['type'] == 'JSON_Task':
                 workflow_file = node['file']
                 try:
-                    with open(workflow_file, 'r') as f:
-                        workflow = json.load(f)
+                    workflow = None
+                    for attempt in range(5):
+                        try:
+                            with open(workflow_file, 'r') as f:
+                                workflow = json.load(f)
+                            break
+                        except json.JSONDecodeError:
+                            if attempt < 4:
+                                await asyncio.sleep(0.1)
+                            else:
+                                raise
+                    
+                    if not workflow:
+                        continue
                     
                     status = workflow.get('status')
                     
@@ -114,25 +144,7 @@ class AGYNodeOSEventHandler:
                         # Handle Swarm Agent execution
                         agent_list = workflow.get('agents', [])
                         print(f"[Swarm Dispatcher] Emitting Swarm intent for AGY external swarm: {agent_list}")
-                        print(f"[Swarm Dispatcher] Actively spawning AGY CLI Subprocess...")
-                        
-                        # Active AGY CLI Subprocessing
-                        prompt = f"System OS Alert: A workflow intent '{workflow.get('action')}' has been requested. Required agents: {agent_list}. Please fulfill this workflow by acting as the requested agents. When finished, update {workflow_file} status to 'completed'."
-                        cmd = f'agy --print "{prompt}"'
-                        
-                        # Run the shell command asynchronously so it doesn't block the daemon
-                        async def spawn_agent():
-                            process = await asyncio.create_subprocess_shell(
-                                cmd,
-                                stdout=asyncio.subprocess.PIPE,
-                                stderr=asyncio.subprocess.PIPE
-                            )
-                            stdout, stderr = await process.communicate()
-                            if stderr:
-                                print(f"[Swarm Dispatcher] AGY CLI Warning: {stderr.decode('utf-8').strip()}")
-                            print(f"[Swarm Dispatcher] AGY CLI Subprocess execution finished.")
-                            
-                        asyncio.create_task(spawn_agent())
+                        print(f"[Swarm Dispatcher] Intent stored. Awaiting Antigravity Hook lifecycle to pick it up.")
                     
                     elif status == 'running':
                         print(f"[Swarm Dispatcher] AGY Swarm has picked up the task. Monitoring execution...")
@@ -147,8 +159,26 @@ class AGYNodeOSEventHandler:
                     print(f"[Swarm Error] Failed to process workflow state: {e}")
 
 class AGYDaemon:
+    def _ensure_native_rules(self):
+        rules_dir = os.path.join(self.workspace, ".agents", "rules")
+        os.makedirs(rules_dir, exist_ok=True)
+        
+        rule_path = os.path.join(rules_dir, "nodeos_native_interaction.md")
+        rule_content = """# NodeOS Native Interaction Paradigm
+
+Whenever operating inside this NodeOS-managed workspace, you MUST follow these constraints:
+1. You MUST use built-in system tools (view_file, list_dir, replace_file_content) to interact directly with the file system.
+2. For spatial architectural insight and dependency resolution, query the SQLite database natively (e.g., `sqlite3 agy_nodeos.db "SELECT * FROM nodes;"`).
+3. For task dispatching and swarm intent, directly modify `workflow.json` at the root of the workspace.
+"""
+        if not os.path.exists(rule_path):
+            with open(rule_path, "w") as f:
+                f.write(rule_content)
+            print(f"[NodeOS] Injected local workspace rules -> {rule_path}")
+
     def __init__(self, workspace_dir):
         self.workspace = workspace_dir
+        self._ensure_native_rules()
         self.graph = AGYGraphManager()
         self.jage = JageASTEngine()
         self.spatial = NativeNodesEngine()
@@ -157,7 +187,7 @@ class AGYDaemon:
         self.event_handler = AGYNodeOSEventHandler(self.jage, self.spatial, self.graph, self.loop)
         
         # Initialize our zero-dependency raw watchdog
-        self.raw_watchdog = AGYRawWatchdog(self.workspace, self.event_handler.on_modified, interval=1.0)
+        self.raw_watchdog = AGYRawWatchdog(self.workspace, self.event_handler.on_event, interval=1.0)
         
         self.ipc_thread = threading.Thread(target=self.start_ipc_server, daemon=True)
         self.ipc_thread.start()

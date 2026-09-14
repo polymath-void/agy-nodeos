@@ -6,15 +6,15 @@
         "file": "/data/data/com.termux/files/home/Projects/ComputeRes/tests/test_phase7.py",
         "line_number": 11,
         "calls": [
+            "close",
+            "assertEqual",
             "start",
-            "run",
-            "SignalingServer",
+            "WebRTCMeshRouter",
             "assertIsNotNone",
             "stop",
-            "close",
-            "WebRTCMeshRouter",
-            "assertEqual",
-            "_test_mesh"
+            "run",
+            "_test_mesh",
+            "SignalingServer"
         ]
     },
     "source": "class TestPhase7MeshRouter(unittest.TestCase):\n    def test_mesh_router_initialization(self):\n        router = WebRTCMeshRouter(node_id=\"TestNode-01\", swarm_id=\"test-swarm\")\n        self.assertEqual(router.node_id, \"TestNode-01\")\n        self.assertEqual(router.swarm_id, \"test-swarm\")\n        self.assertIsNotNone(router.crdt)\n\n    def test_mesh_router_start(self):\n        async def _test_mesh():\n            server = SignalingServer(host=\"127.0.0.1\", port=8797)\n            await server.start()\n\n            router = WebRTCMeshRouter(node_id=\"MeshNode-Alpha\", swarm_id=\"alpha\", signaling_url=\"ws://127.0.0.1:8797\")\n            await router.start()\n            self.assertIsNotNone(router.signaling_client)\n\n            if router.signaling_client:\n                await router.signaling_client.close()\n            await server.stop()\n\n        asyncio.run(_test_mesh())"

@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "agy-nodeos": {
-      "command": "python",
-      "args": ["/data/data/com.termux/files/home/Projects/agy-nodeos/mcp_server.py"]
-    }
-  }
-}

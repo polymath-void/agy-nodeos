@@ -6,17 +6,17 @@
         "file": "/data/data/com.termux/files/home/Projects/ComputeRes/compute_res/cli.py",
         "line_number": 11,
         "calls": [
-            "join",
-            "exists",
-            "exit",
             "dump",
+            "abspath",
+            "exit",
+            "makedirs",
+            "ModuleManifest",
+            "join",
+            "dirname",
             "to_dict",
             "print",
-            "dirname",
-            "ModuleManifest",
             "open",
-            "abspath",
-            "makedirs"
+            "exists"
         ]
     },
     "source": "def build_skill_package(source_path: str, name: str, version: str = \"1.0.0\", fuel: int = 10000000) -> str:\n    \"\"\"Packages a skill directory or source file into a compute-res.json bundle.\"\"\"\n    if not os.path.exists(source_path):\n        print(f\"\u274c Error: Source path '{source_path}' does not exist.\")\n        sys.exit(1)\n\n    out_dir = os.path.join(os.path.dirname(os.path.abspath(source_path)), f\"{name}_bundle\")\n    os.makedirs(out_dir, exist_ok=True)\n\n    manifest = ModuleManifest(\n        name=name,\n        version=version,\n        fuel_limit=fuel,\n        memory_limit_mb=64,\n        permissions=[\"filesystem:read\", \"network:outbound\"],\n        entrypoint=\"run\",\n        description=f\"Auto-packaged skill module '{name}'\"\n    )\n\n    manifest_path = os.path.join(out_dir, \"compute-res.json\")\n    with open(manifest_path, \"w\", encoding=\"utf-8\") as f:\n        json.dump(manifest.to_dict(), f, indent=2)\n\n    print(f\"\u2705 Successfully packaged skill '{name}' v{version} into {out_dir}\")\n    print(f\"   Manifest created at: {manifest_path}\")\n    return out_dir"

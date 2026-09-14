@@ -41,6 +41,22 @@ class AGYGraphManager:
         conn.commit()
         conn.close()
 
+    def purge_file_nodes(self, filepath):
+        """Purges all nodes (and their edges) associated with a deleted file."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute("DELETE FROM nodes WHERE filepath = ?", (filepath,))
+        cursor.execute("""
+            DELETE FROM edges WHERE 
+            source_id NOT IN (SELECT node_id FROM nodes) OR 
+            target_id NOT IN (SELECT node_id FROM nodes)
+        """)
+        
+        conn.commit()
+        conn.close()
+        print(f"[AGY-NodeOS] Purged nodes for {filepath} from SQLite graph.")
+
     def index_system_nodes(self):
         """Indexes all AGY Built-in Skills and Rules natively as System Nodes."""
         print("[AGY-NodeOS] Indexing System Nodes natively...")

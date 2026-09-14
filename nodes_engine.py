@@ -1,5 +1,6 @@
 import math
 import sqlite3
+import sys
 
 class Point:
     def __init__(self, x, y, node_id, node_type, mass=1.0, name="unknown", calls=None, filepath=None):
@@ -125,7 +126,7 @@ class NativeNodesEngine:
                     edge_count += 1
                     try:
                         cursor.execute('''
-                            INSERT INTO edges (source_id, target_id, relation_type) 
+                            INSERT OR IGNORE INTO edges (source_id, target_id, relation_type) 
                             VALUES (?, ?, "CALL")
                         ''', (p.node_id, target.node_id))
                     except sqlite3.OperationalError:
@@ -216,6 +217,14 @@ class NativeNodesEngine:
             ''', (p.node_id, p.node_type, p.name, p.filepath, p.x, p.y))
         conn.commit()
         conn.close()
+
+    def remove_nodes_by_file(self, filepath):
+        """Removes all spatial nodes belonging to a deleted file."""
+        sys.stderr.write(f"[Physics Engine] Removing spatial nodes for deleted file: {filepath}\n")
+        self.all_nodes = [node for node in self.all_nodes if node.filepath != filepath]
+        for node in self.all_nodes:
+            node.edges = [e for e in node.edges if e.filepath != filepath]
+        self.rebuild_qtree()
 
     def add_node(self, node_id, node_type, name="unknown", calls=None, parent_x=500, parent_y=500, filepath=None):
         import random

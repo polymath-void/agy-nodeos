@@ -102,6 +102,23 @@ class JageASTEngine:
             json.dump(data, f, indent=4)
         print(f"[Jage Polyglot] Mapped {metadata['type']} '{metadata['name']}' -> Hash: {node_hash[:8]}...")
 
+    def purge_file_cache(self, filepath):
+        """Purges schema JSONs associated with a deleted file."""
+        if not os.path.exists(self.schema_dir):
+            return
+        print(f"[Jage] Purging schema JSONs for deleted file: {filepath}")
+        for filename in os.listdir(self.schema_dir):
+            if not filename.endswith('.json'):
+                continue
+            schema_path = os.path.join(self.schema_dir, filename)
+            try:
+                with open(schema_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                if data.get("metadata", {}).get("file") == filepath:
+                    os.remove(schema_path)
+            except Exception as e:
+                print(f"[Jage] Failed to purge {filename}: {e}")
+
     def re_stitch(self, node_hash, new_source):
         """
         JAGE RE-STITCHER w/ NATIVE VERIFICATION KERNEL

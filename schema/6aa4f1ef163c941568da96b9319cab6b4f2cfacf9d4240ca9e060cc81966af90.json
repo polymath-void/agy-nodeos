@@ -6,16 +6,16 @@
         "file": "/data/data/com.termux/files/home/Projects/ComputeRes/tests/test_phase6.py",
         "line_number": 12,
         "calls": [
+            "assertEqual",
             "loads",
             "broadcast_event",
-            "start",
-            "connect",
-            "run",
             "recv",
-            "_run_test",
-            "stop",
             "WebSocketTelemetryGateway",
-            "assertEqual"
+            "_run_test",
+            "start",
+            "stop",
+            "run",
+            "connect"
         ]
     },
     "source": "class TestPhase6WebSocketGateway(unittest.TestCase):\n    def test_websocket_gateway(self):\n        async def _run_test():\n            gw = WebSocketTelemetryGateway(host=\"127.0.0.1\", port=8798)\n            await gw.start()\n\n            async with websockets.connect(\"ws://127.0.0.1:8798\") as client:\n                await gw.broadcast_event(\"FUEL_METRIC\", {\"fuel_used\": 1500, \"node\": \"Node-Alpha\"})\n                msg = await client.recv()\n                data = json.loads(msg)\n                self.assertEqual(data[\"event\"], \"FUEL_METRIC\")\n                self.assertEqual(data[\"data\"][\"fuel_used\"], 1500)\n\n            await gw.stop()\n\n        asyncio.run(_run_test())"

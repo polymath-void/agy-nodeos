@@ -6,16 +6,16 @@
         "file": "/data/data/com.termux/files/home/Projects/ComputeRes/tests/test_phase8.py",
         "line_number": 9,
         "calls": [
-            "exists",
             "assertGreater",
-            "search",
-            "remove",
             "len",
-            "ChatMemoryDB",
-            "insert",
-            "expanduser",
             "get_session",
-            "assertEqual"
+            "exists",
+            "insert",
+            "search",
+            "ChatMemoryDB",
+            "expanduser",
+            "assertEqual",
+            "remove"
         ]
     },
     "source": "class TestPhase8MemoryAndFTS5(unittest.TestCase):\n    def test_fts5_insert_and_search(self):\n        test_db_path = os.path.expanduser(\"~/.compute_res/test_interactions.db\")\n        if os.path.exists(test_db_path):\n            os.remove(test_db_path)\n\n        db = ChatMemoryDB(db_path=test_db_path)\n        row_id = db.insert(\n            session_id=\"sess_123\",\n            agent_id=\"Agent-Alpha\",\n            action=\"deploy_wasm\",\n            message=\"Successfully compiled Rust binary to WASM with fuel metering\"\n        )\n        self.assertGreater(row_id, 0)\n\n        # Retrieve session\n        session_logs = db.get_session(\"sess_123\")\n        self.assertEqual(len(session_logs), 1)\n\n        # Perform FTS5 full-text search\n        search_results = db.search(\"WASM fuel\")\n        self.assertEqual(len(search_results), 1)\n        self.assertEqual(search_results[0][\"agent_id\"], \"Agent-Alpha\")\n\n        if os.path.exists(test_db_path):\n            os.remove(test_db_path)"

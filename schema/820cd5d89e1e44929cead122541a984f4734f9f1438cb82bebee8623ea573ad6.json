@@ -6,10 +6,10 @@
         "file": "/data/data/com.termux/files/home/Projects/ComputeRes/compute_res/memory/vector_mgr.py",
         "line_number": 14,
         "calls": [
-            "sort",
+            "round",
             "cosine_similarity",
             "append",
-            "round"
+            "sort"
         ]
     },
     "source": "class VectorManager:\n    \"\"\"\n    Real Cosine-Similarity K-Nearest Neighbor (KNN) Vector Memory Store.\n    \"\"\"\n    def __init__(self):\n        self.index: List[Dict[str, Any]] = []\n\n    def store(self, vector: List[float], payload_id: str, metadata: Dict[str, Any] = None):\n        self.index.append({\n            \"id\": payload_id,\n            \"vector\": vector,\n            \"metadata\": metadata or {}\n        })\n\n    def search(self, query_vector: List[float], top_k: int = 5) -> List[Dict[str, Any]]:\n        scored = []\n        for item in self.index:\n            score = cosine_similarity(query_vector, item[\"vector\"])\n            scored.append({\n                \"id\": item[\"id\"],\n                \"score\": round(score, 4),\n                \"metadata\": item[\"metadata\"]\n            })\n        scored.sort(key=lambda x: x[\"score\"], reverse=True)\n        return scored[:top_k]"
