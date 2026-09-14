@@ -22,3 +22,6 @@ classifiers = [
 polymath-nodeos-daemon = "polymath_nodeos.daemon:daemonize_and_run"
 polymath-nodeos-injector = "polymath_nodeos.scripts.intent_injector:main"
 polymath-nodeos-stopper = "polymath_nodeos.scripts.intent_stopper:main"
+
+[tool.setuptools.packages.find]
+include = ["polymath_nodeos*"]
