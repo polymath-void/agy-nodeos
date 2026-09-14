@@ -3,6 +3,9 @@ import asyncio
 import os
 import sys
 
+# Ensure scripts directory is in path for our new Swarm OS feature engines
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts'))
+
 import subprocess
 import threading
 import json
@@ -91,6 +94,25 @@ class AGYNodeOSEventHandler:
                 for node in ast_nodes:
                     self.spatial.add_node(node['hash'], node['type'], node.get('name', 'unknown'), node.get('calls', []), filepath=filepath)
                 self.spatial.resolve_edges()
+                
+            # -- BEGIN NEW SWARM OS FEATURES --
+            if event_type == "modified":
+                try:
+                    from blast_radius_engine import BlastRadiusEngine
+                    br_engine = BlastRadiusEngine(db_path=self.graph.db_path, workspace=self.graph.workspace, threshold=10)
+                    br_engine.enforce_threshold(filepath)
+                except Exception as e:
+                    print(f"[Swarm OS] Blast Radius Engine failed: {e}")
+                    
+            elif event_type == "created":
+                try:
+                    from ghost_writer_engine import GhostWriterEngine
+                    gw_engine = GhostWriterEngine(workspace_root=self.graph.workspace, db_name=self.graph.db_path)
+                    gw_engine.execute_pipeline(filepath)
+                except Exception as e:
+                    print(f"[Swarm OS] Ghost Writer Engine failed: {e}")
+            # -- END NEW SWARM OS FEATURES --
+
         elif event_type == "deleted":
             print(f"\n[Daemon] Detected deletion of: {filepath}")
             if not filepath.endswith('.json'):
