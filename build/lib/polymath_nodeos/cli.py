@@ -91,10 +91,6 @@ def main():
                        help='Execute an internal command (e.g., ping).')
 
     # parse_known_args permits forwarding remaining arbitrary flags directly to the underlying scripts
-    if len(sys.argv) == 1:
-        parser.print_help()
-        sys.exit(1)
-        
     args, unknown = parser.parse_known_args()
 
     if args.daemon:

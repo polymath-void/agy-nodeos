@@ -1,0 +1,2 @@
+[console_scripts]
+nodeos = polymath_nodeos.cli:main
