@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "polymath-nodeos"
-version = "1.0.1"
+version = "1.0.2"
 description = "A zero-dependency Autonomous Agentic Swarm Operating System."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -19,9 +19,7 @@ classifiers = [
 ]
 
 [project.scripts]
-polymath-nodeos-daemon = "polymath_nodeos.daemon:daemonize_and_run"
-polymath-nodeos-injector = "polymath_nodeos.scripts.intent_injector:main"
-polymath-nodeos-stopper = "polymath_nodeos.scripts.intent_stopper:main"
+nodeos = "polymath_nodeos.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["polymath_nodeos*"]

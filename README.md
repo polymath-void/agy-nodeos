@@ -43,7 +43,7 @@ Install the package globally via pip:
 pip install polymath-nodeos
 ```
 **What this does:**
-1. Installs the `polymath-nodeos-daemon` CLI globally.
+1. Installs the `nodeos` CLI globally.
 2. Allows you to instantly boot the Swarm OS in any folder.
 3. Automatically triggers your swarm agents to read `workflow.json`.
 
@@ -56,7 +56,7 @@ Polymath-NodeOS works silently in the background to empower your AI agents.
 ### Starting the OS
 To initialize NodeOS in a project directory, you or your agent can start the background daemon:
 ```bash
-polymath-nodeos-daemon
+nodeos -d
 ```
 *Note: In properly configured workspaces, the daemon automatically boots when the agent initializes thanks to the AGY Customization Engine (`PreInvocation` hook).*
 

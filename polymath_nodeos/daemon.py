@@ -282,31 +282,4 @@ Whenever operating inside this NodeOS-managed workspace, you MUST follow these c
         finally:
             self.loop.close()
 
-def daemonize_and_run():
-    import argparse
-    parser = argparse.ArgumentParser(
-        prog="polymath-nodeos-daemon",
-        description="🧠 Polymath-NodeOS: The Autonomous Swarm Operating System\n\nRuns a zero-dependency physical kinetic matrix daemon in the background to empower LLM Swarms.",
-        formatter_class=argparse.RawTextHelpFormatter
-    )
-    parser.add_argument('--run-as-daemon', action='store_true', help='Run the NodeOS instance synchronously (internal use only).')
-    parser.add_argument('-v', '--version', action='version', version='Polymath-NodeOS 1.0.0')
-    
-    args = parser.parse_args()
-    
-    if args.run_as_daemon:
-        target_workspace = os.getcwd()
-        daemon = AGYDaemon(target_workspace)
-        daemon.run()
-    else:
-        print("[System] Detaching Polymath-NodeOS Daemon (Zero-Dependency) to background process...")
-        if os.name == 'nt':
-            CREATE_NO_WINDOW = 0x08000000
-            subprocess.Popen([sys.executable, sys.argv[0], '--run-as-daemon'], creationflags=CREATE_NO_WINDOW)
-        else:
-            log_file = open(os.path.join(os.getcwd(), 'daemon.log'), 'a')
-            subprocess.Popen([sys.executable, '-u', sys.argv[0], '--run-as-daemon'], start_new_session=True, stdout=log_file, stderr=log_file)
-        sys.exit(0)
 
-if __name__ == "__main__":
-    daemonize_and_run()
