@@ -71,7 +71,7 @@ def _ping_daemon():
 def main():
     parser = argparse.ArgumentParser(
         prog="nodeos",
-        description="🧠 Polymath-NodeOS: The Autonomous Swarm Operating System CLI",
+        description="Polymath-NodeOS: The Autonomous Swarm Operating System CLI",
         formatter_class=argparse.RawTextHelpFormatter
     )
     
