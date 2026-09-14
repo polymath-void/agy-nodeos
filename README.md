@@ -8,14 +8,25 @@ This project is 100% cross-platform and runs flawlessly on **Windows, macOS, Lin
 
 ---
 
-## 🚀 Key Features
+## 🚀 Key Features & Real-World Use Cases
 
-*   **Kinetic Code Physics:** Uses Hooke's Law (Spring Attraction) and Coulomb Repulsion via a Native QuadTree matrix to spatially cluster code components based on their Abstract Syntax Tree (AST) dependencies. [^1]
-*   **Polyglot AST Ingestion:** Uses Python's native `ast` module to scan and parse the physical project graph rapidly.
-*   **ACID-Compliant SQLite Graph:** Maps the entire system (including rules and skills) into a resilient SQLite graph (`agy_nodeos.db`). [^2]
-*   **Zero-Dependency Ecosystem:** Runs entirely on native Python modules (`math`, `sqlite3`, `asyncio`, `ast`). No `pip install` required.
-*   **Native Spatial SQL:** Sub-agents interact directly with the `agy_nodeos.db` database using standard `sqlite3` commands to evaluate AST edges and spatial blast radius.
-*   **JSON Workflow Swarm Dispatch:** Operates via a purely native event-driven paradigm. Agents manipulate `workflow.json` directly, and the `daemon.py` watchdog instantly delegates tasks natively to the swarm.
+The true value of AGY-NodeOS is curing the "blind spot" problem that plagues traditional AI coding agents. Instead of blindly modifying files and breaking downstream dependencies, NodeOS mathematically calculates the structural layout of your codebase into a native SQLite database (`agy_nodeos.db`).
+
+### 1. Real-Time Blast Radius Warnings 💥
+*   **The Problem:** An agent changes a core utility function without realizing it breaks 14 deeply nested components.
+*   **The NodeOS Solution:** The zero-dependency watchdog detects the file save. It instantly runs a recursive SQLite CTE to calculate the transitive dependents. If the "blast radius" is high, it automatically drops an ephemeral warning directly into the agent's memory stream, preventing catastrophic commits.
+
+### 2. Spatial Context Ghost Writer 👻
+*   **The Problem:** AI agents waste massive amounts of tokens and time `grep`ing or opening multiple files to memorize function signatures when building new APIs.
+*   **The NodeOS Solution:** When a new file is created, NodeOS calculates its QuadTree spatial centroid, locates the 10 closest physical neighbors in the AST matrix, and seamlessly injects their exact code signatures into the agent's context payload. The agent writes flawless code on the first try without a single research tool.
+
+### 3. The Domino Refactor Engine 🎲
+*   **The Problem:** Standard refactoring using Regex search-and-replace accidentally corrupts identically named variables or comments across massive projects.
+*   **The NodeOS Solution:** NodeOS uses pure Graph Theory (Inner Joins on AST Edges) to locate the precise structural files invoking a specific function hash. It then dynamically dispatches a massive parallel array of Antigravity Swarm agents to deterministically refactor the files.
+
+### 4. Semantic Dead Code Eradication ☠️
+*   **The Problem:** Unused code accumulates, polluting the LLM's context window.
+*   **The NodeOS Solution:** A native engine queries the graph for orphaned nodes (nodes with 0 incoming AST dependencies) and automatically orchestrates the safe deletion of dead code.
 
 ---
 
@@ -27,14 +38,14 @@ AGY-NodeOS is designed for frictionless installation.
 If you are using the Antigravity IDE, simply cloning this repository and opening the workspace will automatically trigger the `.agents/hooks.json` script. The system will seamlessly install itself into your global environment.
 
 ### Method 2: Manual Installation
-If you prefer a manual setup or are running a headless environment, navigate to the repository root and run:
+Navigate to the repository root and run:
 ```bash
 python install.py
 ```
 **What this does:**
-1. Installs the `nodeos_standard.md` rule into your `~/.gemini/config/rules/` directory.
-2. Deploys the `agy-nodeos-installer` skill into your `~/.gemini/config/skills/` directory.
-3. Grants your AGY agents global awareness of the NodeOS interaction paradigm.
+1. Installs the `nodeos_standard.md` rule globally.
+2. Deploys the `agy-nodeos-installer` skill.
+3. Grants your AGY agents immediate global awareness of the NodeOS interaction paradigm.
 
 ---
 
@@ -49,7 +60,7 @@ python daemon.py --run-as-daemon
 ```
 *Note: In properly configured workspaces, the daemon automatically boots when the agent initializes thanks to the AGY Customization Engine (`PreInvocation` hook).*
 
-### Dispatching Tasks
+### Dispatching Swarm Tasks
 Instead of manually typing prompts, you can add task drops to `workflow.json`:
 ```json
 {
@@ -69,6 +80,7 @@ If you are an autonomous AI Agent interacting with this workspace, adhere to the
 1. **File Operations**: Use your built-in editing tools (e.g., `view_file`, `replace_file_content`).
 2. **Spatial Queries**: Use standard SQL queries against `agy_nodeos.db` to trace dependencies.
 3. **Task Orchestration**: Update the `status` field in `workflow.json` to manage sub-agent queues.
+4. **Feature Modules**: Do NOT execute standard searches for refactoring. Utilize the pre-built mathematical engines located in the `scripts/` directory.
 
 ---
 
@@ -79,7 +91,7 @@ The underlying architecture relies on several foundational concepts adapted for 
 2. **Deep Ingestion:** The daemon scans the project using `jage_engine.py`, mapping semantic `ast.Call` edges natively.
 3. **Kinetic Simulation:** `nodes_engine.py` hydrates the QuadTree and applies spatial algorithms to physically pull dependent AST blocks into clustered coordinates.
 4. **Intent Emission:** When a workflow intent is detected, it is logged to `workflow.json`.
-5. **Telemetry Tracking:** `telemetry.py` natively tracks Swarm execution intents and state transitions (Pending -> Running -> Completed).
+5. **Telemetry Tracking:** `scripts/telemetry.py` natively tracks Swarm execution intents and state transitions (Pending -> Running -> Completed).
 
 > **Citations:**
 > [^1]: Barnes, J., & Hut, P. (1986). A hierarchical O(N log N) force-calculation algorithm (QuadTree application for NodeOS physics).
