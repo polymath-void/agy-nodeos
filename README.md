@@ -47,6 +47,12 @@ pip install polymath-nodeos
 2. Allows you to instantly boot the Swarm OS in any folder.
 3. Automatically triggers your swarm agents to read `workflow.json`.
 
+After pip installing, you must run the Antigravity integration setup once:
+```bash
+nodeos --install
+```
+This automatically maps NodeOS directly into your AI Agent's global memory (`~/.gemini/config/`), granting them the `nodeos_standard.md` rule and `agy-nodeos-installer` injection protocols.
+
 ---
 
 ## 📖 Usage Guide

@@ -89,6 +89,8 @@ def main():
                        help='Run a specific script or engine (e.g., intent_injector, intent_stopper).')
     group.add_argument('-c', '--command', type=str, metavar='CMD', 
                        help='Execute an internal command (e.g., ping).')
+    group.add_argument('-i', '--install', action='store_true', 
+                       help='Install global Antigravity rules and skills for NodeOS.')
 
     # parse_known_args permits forwarding remaining arbitrary flags directly to the underlying scripts
     if len(sys.argv) == 1:
@@ -105,6 +107,9 @@ def main():
         run_script(args.script, unknown)
     elif args.command:
         execute_command(args.command, unknown)
+    elif args.install:
+        from polymath_nodeos.installer import install_nodeos
+        install_nodeos()
 
 if __name__ == "__main__":
     main()
